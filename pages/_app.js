@@ -5,26 +5,35 @@ import { Provider } from "@shopify/app-bridge-react";
 import "@shopify/polaris/dist/styles.css";
 import translations from "@shopify/polaris/locales/en.json";
 import Cookies from "js-cookie";
-import Navigation from "../components/Navigation";
+import NavigationRouting from "../components/nav/NavigationRouting";
+import ApolloClient from "apollo-boost";
+import { ApolloProvider } from "react-apollo";
 
+const client = new ApolloClient({
+  fetchOptions: {
+    credentials: "include",
+  },
+});
 const shoporigin = Cookies.get("shopOrigin");
 
 function MyApp({ Component, pageProps, shopOrigin, API_KEY }) {
   const config = {
     apiKey: API_KEY,
-    shopOrigin,
+    shopOrigin: shopOrigin ? shoporigin : shoporigin,
     forceRedirect: true,
   };
-  console.log(shoporigin);
+
   return (
     <>
       <Head>
         <title>SwipeCommerce App</title>
       </Head>
       <Provider config={config}>
-        <Navigation />
+        <NavigationRouting />
         <AppProvider i18n={translations}>
-          <Component {...pageProps} />
+          <ApolloProvider client={client}>
+            <Component {...pageProps} />
+          </ApolloProvider>
         </AppProvider>
       </Provider>
     </>

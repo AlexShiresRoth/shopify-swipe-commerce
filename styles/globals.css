@@ -1,3 +1,10 @@
+:root {
+  --brand-success-color: #8daa91;
+  --brand-main-color: #28112b;
+  --brand-text-light: #f6e4f6;
+  --brand-accent: #7d83ff;
+}
+
 html,
 body {
   padding: 0;

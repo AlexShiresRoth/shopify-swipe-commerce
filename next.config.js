@@ -1,5 +1,6 @@
 require("dotenv").config();
 const withCSS = require("@zeit/next-css");
+const withSass = require("@zeit/next-sass");
 const webpack = require("webpack");
 
 const apiKey = JSON.stringify(process.env.SHOPIFY_API_KEY);

@@ -7,6 +7,8 @@ const { verifyRequest } = require("@shopify/koa-shopify-auth");
 const session = require("koa-session");
 
 dotenv.config();
+const { default: graphQLProxy } = require("@shopify/koa-shopify-graphql-proxy");
+const { ApiVersion } = require("@shopify/koa-shopify-graphql-proxy");
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -24,7 +26,7 @@ app.prepare().then(() => {
     createShopifyAuth({
       apiKey: SHOPIFY_API_KEY,
       secret: SHOPIFY_SECRET_KEY,
-      scopes: ["read_products"],
+      scopes: ["read_products", "write_products"],
       accessMode: "offline",
       afterAuth(ctx) {
         const urlParams = new URLSearchParams(ctx.request.url);
@@ -39,7 +41,7 @@ app.prepare().then(() => {
       },
     })
   );
-
+  server.use(graphQLProxy({ version: ApiVersion.October20 }));
   server.use(verifyRequest());
   server.use(async (ctx) => {
     await handle(ctx.req, ctx.res);
