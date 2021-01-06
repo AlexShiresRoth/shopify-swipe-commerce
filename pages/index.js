@@ -2,7 +2,6 @@ import Head from "next/head";
 import { Page, Layout, EmptyState } from "@shopify/polaris";
 import { ResourcePicker, TitleBar } from "@shopify/app-bridge-react";
 import { useState } from "react";
-import ResourceList from "../components/queries/ResourceList";
 import store from "store-js";
 export default function Home() {
   const [open, toggleOpen] = useState(false);
@@ -45,7 +44,6 @@ export default function Home() {
             }
           ></EmptyState>
         </Layout>
-        <ResourceList />
       </Page>
     </>
   );
