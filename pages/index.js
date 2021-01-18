@@ -3,6 +3,7 @@ import { Page, Layout, EmptyState } from "@shopify/polaris";
 import { ResourcePicker, TitleBar } from "@shopify/app-bridge-react";
 import { useState } from "react";
 import store from "store-js";
+import ProductList from "../components/queries/ProductList";
 export default function Home() {
   const [open, toggleOpen] = useState(false);
 
@@ -12,6 +13,9 @@ export default function Home() {
     console.log(idsFromResources);
     store.set("ids", idsFromResources);
   };
+
+  const emptyState = !store.get("ids");
+  console.log(store.get("ids"));
   return (
     <>
       <Head>
@@ -32,18 +36,22 @@ export default function Home() {
           onSelection={(resources) => handleSelection(resources)}
           onCancel={() => toggleOpen(false)}
         />
-        <Layout>
-          <EmptyState
-            heading={"Setup your store"}
-            action={{
-              content: "Select Products",
-              onAction: () => toggleOpen(true),
-            }}
-            image={
-              "https://cdn.shopify.com/s/files/1/0757/9955/files/empty-state.svg"
-            }
-          ></EmptyState>
-        </Layout>
+        {emptyState ? (
+          <Layout>
+            <EmptyState
+              heading={"Setup your store"}
+              action={{
+                content: "Select Products",
+                onAction: () => toggleOpen(true),
+              }}
+              image={
+                "https://cdn.shopify.com/s/files/1/0757/9955/files/empty-state.svg"
+              }
+            ></EmptyState>
+          </Layout>
+        ) : (
+          <ProductList />
+        )}
       </Page>
     </>
   );

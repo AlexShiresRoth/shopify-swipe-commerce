@@ -46,7 +46,6 @@ const ProductList = (props) => {
   const context = useContext(Context);
   const twoWeeksFromNow = new Date(Date.now() + 12096e5).toDateString();
 
-  console.log(context);
   const redirectToProduct = () => {
     const redirect = Redirect.create(context);
     redirect.dispatch(Redirect.Action.APP, "/editproducts");
@@ -57,55 +56,56 @@ const ProductList = (props) => {
       {({ data, loading, error }) => {
         if (loading) return <div>Loading…</div>;
         if (error) return <div>{error.message}</div>;
-        console.log(data);
         return (
-          <ResourceList
-            showHeader
-            resourceName={{ singular: "Product", plural: "Products" }}
-            items={data.nodes}
-            renderItem={(item) => {
-              const media = (
-                <Thumbnail
-                  source={
-                    item.images.edges[0]
-                      ? item.images.edges[0].node.originalSrc
-                      : ""
-                  }
-                  alt={
-                    item.images.edges[0]
-                      ? item.images.edges[0].node.altText
-                      : ""
-                  }
-                />
-              );
-              const price = item.variants.edges[0].node.price;
-              return (
-                <ResourceList.Item
-                  id={item.id}
-                  media={media}
-                  accessibilityLabel={`View details for ${item.title}`}
-                  onClick={() => {
-                    store.set("item", item);
-                    redirectToProduct();
-                  }}
-                >
-                  <Stack>
-                    <Stack.Item fill>
-                      <h3>
-                        <TextStyle variation="strong">{item.title}</TextStyle>
-                      </h3>
-                    </Stack.Item>
-                    <Stack.Item>
-                      <p>${price}</p>
-                    </Stack.Item>
-                    <Stack.Item>
-                      <p>Expires on {twoWeeksFromNow} </p>
-                    </Stack.Item>
-                  </Stack>
-                </ResourceList.Item>
-              );
-            }}
-          />
+          <Card>
+            <ResourceList
+              showHeader
+              resourceName={{ singular: "Product", plural: "Products" }}
+              items={data.nodes}
+              renderItem={(item) => {
+                const media = (
+                  <Thumbnail
+                    source={
+                      item.images.edges[0]
+                        ? item.images.edges[0].node.originalSrc
+                        : ""
+                    }
+                    alt={
+                      item.images.edges[0]
+                        ? item.images.edges[0].node.altText
+                        : ""
+                    }
+                  />
+                );
+                const price = item.variants.edges[0].node.price;
+                return (
+                  <ResourceList.Item
+                    id={item.id}
+                    media={media}
+                    accessibilityLabel={`View details for ${item.title}`}
+                    onClick={() => {
+                      store.set("item", item);
+                      redirectToProduct();
+                    }}
+                  >
+                    <Stack>
+                      <Stack.Item fill>
+                        <h3>
+                          <TextStyle variation="strong">{item.title}</TextStyle>
+                        </h3>
+                      </Stack.Item>
+                      <Stack.Item>
+                        <p>${price}</p>
+                      </Stack.Item>
+                      <Stack.Item>
+                        <p>Expires on {twoWeeksFromNow} </p>
+                      </Stack.Item>
+                    </Stack>
+                  </ResourceList.Item>
+                );
+              }}
+            />
+          </Card>
         );
       }}
     </Query>
