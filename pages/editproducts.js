@@ -15,7 +15,7 @@ import {
 } from "@shopify/polaris";
 import store from "store-js";
 import gql from "graphql-tag";
-import { Mutation } from "react-apollo";
+import { useMutation } from "react-apollo";
 
 const UPDATE_PRICE = gql`
   mutation productVariantUpdate($input: ProductVariantInput!) {
@@ -32,14 +32,19 @@ const UPDATE_PRICE = gql`
 `;
 
 const editproducts = (props) => {
-  const [data, setData] = useState({
+  const [updatePrice, { data, loading, error }] = useMutation(UPDATE_PRICE);
+  const [productData, setData] = useState({
     discount: "",
     price: "",
     variantId: "",
-    showToast: false,
   });
+  const [toastVisibility, setToast] = useState(false);
 
-  const { discount, price, variantId } = data;
+  const { discount, price, variantId } = productData;
+
+  const [processing, setProcessing] = useState(false);
+
+  const [showBanner, bannerVisibility] = useState(false);
 
   const [name, setName] = useState("");
 
@@ -52,80 +57,101 @@ const editproducts = (props) => {
     return (price - discounter).toFixed(2);
   };
 
-  const handleChange = (field) => {
-    return (value) => setData((prevData) => ({ ...prevData, [field]: value }));
-  };
+  const handleChange = (field) => (value) =>
+    setData((prevData) => ({ ...prevData, [field]: value }));
+
+  const toggleToastVisibility = () => setToast(!toastVisibility);
 
   useEffect(() => {
     setData((prevData) => ({ ...prevData, discount: itemToBeConsumed() }));
   }, []);
 
+  useEffect(() => {
+    if (data && data.productVariantUpdate) {
+      toggleToastVisibility(!toastVisibility);
+      setProcessing(false);
+    }
+
+    if (loading) {
+      setProcessing(true);
+    }
+
+    if (error) {
+      bannerVisibility(true);
+    }
+  }, [data, loading, error]);
+
+  console.log("data:" + data, "loading:" + loading, "error:" + error);
   return (
-    <Mutation mutation={UPDATE_PRICE}>
-      {(handleSubmit, { error, data }) => {
-        const showError = error && (
-          <Banner status="critical">{error.message}</Banner>
-        );
-        const showToast = data && data.productVariantUpdate && (
+    <Frame>
+      <Page>
+        {/* {toastVisibility ? (
           <Toast
-            content="Successfully updated"
-            onDismiss={() =>
-              setData((prevData) => ({ ...prevData, showToast: false }))
-            }
+            content="Successfully Updated"
+            onDismiss={toggleToastVisibility}
           />
-        );
-        return (
-          <Frame>
-            <Page>
-              <Layout>
-                <Layout.Section>
-                  <DisplayText size="large">{name}</DisplayText>
-                  <Form>
-                    <Card sectioned>
-                      <FormLayout>
-                        <FormLayout.Group>
-                          <TextField
-                            prefix="$"
-                            value={price}
-                            disabled={true}
-                            label="Original Price"
-                            type="price"
-                          />
-                          <TextField
-                            prefix="$"
-                            value={discount}
-                            onChange={handleChange("discount")}
-                            label="Discounted"
-                            type="discount"
-                          />
-                        </FormLayout.Group>
-                      </FormLayout>
-                    </Card>
-                    <PageActions
-                      primaryAction={[
-                        {
-                          content: "Save",
-                          onAction: () => {
-                            const productVariableInput = {
-                              id: variantId,
-                              price: discount,
-                            };
-                            handleSubmit({
-                              variables: { input: productVariableInput },
-                            });
-                          },
-                        },
-                      ]}
-                      secondaryActions={[{ content: "Remove Discount" }]}
+        ) : null}
+        <Layout.Section>
+          {showBanner ? <Banner status="critical"></Banner> : null}
+        </Layout.Section> */}
+        <Layout.sectioned>
+          <Layout.Section>
+            <DisplayText size="large">{name}</DisplayText>
+            <Form>
+              <Card sectioned>
+                <FormLayout>
+                  <FormLayout.Group>
+                    <TextField
+                      prefix="$"
+                      value={price}
+                      disabled={true}
+                      label="Original Price"
+                      type="price"
                     />
-                  </Form>
-                </Layout.Section>
-              </Layout>
-            </Page>
-          </Frame>
-        );
-      }}
-    </Mutation>
+                    <TextField
+                      prefix="$"
+                      value={discount}
+                      onChange={handleChange("discount")}
+                      label="Discounted"
+                      type="discount"
+                    />
+                  </FormLayout.Group>
+                </FormLayout>
+              </Card>
+              <PageActions
+                primaryAction={[
+                  {
+                    content: "Save",
+                    onAction: (e) => {
+                      e.preventDefault();
+
+                      const productVariableInput = {
+                        id: variantId,
+                        price: discount,
+                      };
+                      updatePrice({
+                        variables: { input: productVariableInput },
+                      });
+                    },
+                  },
+                ]}
+                secondaryActions={[
+                  {
+                    content: "Remove Discount",
+                    onAction: () => {
+                      setData((prevData) => ({
+                        ...prevData,
+                        discount: "",
+                      }));
+                    },
+                  },
+                ]}
+              />
+            </Form>
+          </Layout.Section>
+        </Layout.sectioned>
+      </Page>
+    </Frame>
   );
 };
 

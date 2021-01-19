@@ -31,7 +31,6 @@ app.prepare().then(() => {
       afterAuth(ctx) {
         const urlParams = new URLSearchParams(ctx.request.url);
         const shop = urlParams.get("shop");
-        console.log("got th shop", shop);
         ctx.cookies.set("shopOrigin", shop, {
           httpOnly: false,
           secure: true,

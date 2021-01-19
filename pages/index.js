@@ -10,12 +10,11 @@ export default function Home() {
   const handleSelection = (resources) => {
     const idsFromResources = resources.selection.map((product) => product.id);
     toggleOpen(false);
-    console.log(idsFromResources);
     store.set("ids", idsFromResources);
   };
 
   const emptyState = !store.get("ids");
-  console.log(store.get("ids"));
+
   return (
     <>
       <Head>
@@ -41,7 +40,7 @@ export default function Home() {
             <EmptyState
               heading={"Setup your store"}
               action={{
-                content: "Select Products",
+                content: "Setup your store",
                 onAction: () => toggleOpen(true),
               }}
               image={

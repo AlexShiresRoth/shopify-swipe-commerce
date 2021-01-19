@@ -7,7 +7,7 @@ import {
   TextStyle,
   Thumbnail,
 } from "@shopify/polaris";
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import store from "store-js";
 import { Redirect } from "@shopify/app-bridge/actions";

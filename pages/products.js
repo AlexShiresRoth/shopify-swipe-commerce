@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Page, EmptyState, Layout } from "@shopify/polaris";
-import { ResourcePicker } from "@shopify/app-bridge-react";
+import { Context, ResourcePicker } from "@shopify/app-bridge-react";
 import ProductList from "../components/queries/ProductList";
 import store from "store-js";
 
 const Products = (props) => {
   const [open, toggleOpen] = useState(false);
-
+  const [emptyState, setEmptyState] = useState(false);
+  const context = useContext(Context);
   const handleSelection = (resources) => {
     const idsFromResources = resources.selection.map((product) => product.id);
     toggleOpen(false);
@@ -15,7 +16,9 @@ const Products = (props) => {
     store.set("ids", idsFromResources);
   };
 
-  const emptyState = !store.get("ids");
+  useEffect(() => {
+    setEmptyState(!store.get("ids"));
+  }, [store.get("ids")]);
   return (
     <Page>
       <ResourcePicker

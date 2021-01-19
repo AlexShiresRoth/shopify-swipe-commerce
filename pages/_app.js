@@ -42,7 +42,7 @@ function MyApp({ Component, pageProps, shopOrigin, API_KEY }) {
 
 MyApp.getInitialProps = async ({ ctx }) => {
   const API_KEY = process.env.SHOPIFY_API_KEY;
-  console.log(ctx.query.shop);
+
   return {
     shopOrigin: await ctx.query.shop,
     API_KEY,
