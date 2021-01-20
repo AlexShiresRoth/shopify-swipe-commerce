@@ -31,7 +31,7 @@ const UPDATE_PRICE = gql`
   }
 `;
 
-const editproducts = (props) => {
+const editproducts = () => {
   const [updatePrice, { data, loading, error }] = useMutation(UPDATE_PRICE);
   const [productData, setData] = useState({
     discount: "",
@@ -81,20 +81,26 @@ const editproducts = (props) => {
     }
   }, [data, loading, error]);
 
-  console.log("data:" + data, "loading:" + loading, "error:" + error);
+  // console.log("data:" + data, "loading:" + loading, "error:" + error);
+
+  const toast = (
+    <Toast
+      onDismiss={() => toggleToastVisibility(!toastVisibility)}
+      content="Successfully Updated"
+    />
+  );
+
+  const banner = (
+    <Banner status="critical" onDismiss={() => bannerVisibility(!showBanner)}>
+      {error}
+    </Banner>
+  );
   return (
     <Frame>
       <Page>
-        {/* {toastVisibility ? (
-          <Toast
-            content="Successfully Updated"
-            onDismiss={toggleToastVisibility}
-          />
-        ) : null}
-        <Layout.Section>
-          {showBanner ? <Banner status="critical"></Banner> : null}
-        </Layout.Section> */}
-        <Layout.sectioned>
+        <Layout>
+          {toastVisibility && toast}
+          <Layout.Section>{showBanner && banner}</Layout.Section>
           <Layout.Section>
             <DisplayText size="large">{name}</DisplayText>
             <Form>
@@ -105,26 +111,25 @@ const editproducts = (props) => {
                       prefix="$"
                       value={price}
                       disabled={true}
-                      label="Original Price"
+                      label="Original price"
                       type="price"
                     />
                     <TextField
                       prefix="$"
                       value={discount}
                       onChange={handleChange("discount")}
-                      label="Discounted"
+                      label="Discounted price"
                       type="discount"
                     />
                   </FormLayout.Group>
+                  <p>This sale price will expire in two weeks</p>
                 </FormLayout>
               </Card>
               <PageActions
                 primaryAction={[
                   {
                     content: "Save",
-                    onAction: (e) => {
-                      e.preventDefault();
-
+                    onAction: () => {
                       const productVariableInput = {
                         id: variantId,
                         price: discount,
@@ -137,19 +142,15 @@ const editproducts = (props) => {
                 ]}
                 secondaryActions={[
                   {
-                    content: "Remove Discount",
-                    onAction: () => {
-                      setData((prevData) => ({
-                        ...prevData,
-                        discount: "",
-                      }));
-                    },
+                    content: "Remove discount",
+                    onAction: () =>
+                      setData((prevData) => ({ ...prevData, discount: "" })),
                   },
                 ]}
               />
             </Form>
           </Layout.Section>
-        </Layout.sectioned>
+        </Layout>
       </Page>
     </Frame>
   );

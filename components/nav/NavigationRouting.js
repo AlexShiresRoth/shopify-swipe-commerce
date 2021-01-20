@@ -11,7 +11,6 @@ const NavigationRouting = () => {
   const navTabs = [
     { page: "Home", url: "/", id: uuidv4() },
     { page: "Products", url: "/products", id: uuidv4() },
-    // { page: "Edit Products", url: "/editproducts", id: uuidv4() },
     { page: "App Settings", url: "/AnnotatedLayout", id: uuidv4() },
   ];
 

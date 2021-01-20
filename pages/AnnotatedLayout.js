@@ -13,7 +13,7 @@ import {
   SettingToggle,
 } from "@shopify/polaris";
 
-const annotatedlayout = (props) => {
+const Annotatedlayout = (props) => {
   const [data, setData] = useState({
     discount: "",
   });
@@ -84,6 +84,6 @@ const annotatedlayout = (props) => {
   );
 };
 
-annotatedlayout.propTypes = {};
+Annotatedlayout.propTypes = {};
 
-export default annotatedlayout;
+export default Annotatedlayout;
