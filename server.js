@@ -9,12 +9,13 @@ const session = require("koa-session");
 dotenv.config();
 const { default: graphQLProxy } = require("@shopify/koa-shopify-graphql-proxy");
 const { ApiVersion } = require("@shopify/koa-shopify-graphql-proxy");
+const getSubscriptionUrl = require("./server/getSubscriptionUrl");
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-const { SHOPIFY_SECRET_KEY, SHOPIFY_API_KEY } = process.env;
+const { SHOPIFY_SECRET_KEY, SHOPIFY_API_KEY, HOST } = process.env;
 const PORT = parseInt(process.env.PORT, 10) || 3000;
 
 app.prepare().then(() => {
@@ -28,15 +29,24 @@ app.prepare().then(() => {
       secret: SHOPIFY_SECRET_KEY,
       scopes: ["read_products", "write_products"],
       accessMode: "offline",
-      afterAuth(ctx) {
+      async afterAuth(ctx) {
         const urlParams = new URLSearchParams(ctx.request.url);
-        const shop = urlParams.get("shop");
+        // const shop = urlParams.get("shop");
+        const { shop, accessToken } = ctx.state.shopify;
         ctx.cookies.set("shopOrigin", shop, {
           httpOnly: false,
           secure: true,
           sameSite: "none",
         });
-        ctx.redirect(`/?shop=${shop}`);
+
+        const returnUrl = `${HOST}?shop=${shop}`;
+        const subscriptionUrl = await getSubscriptionUrl(
+          accessToken,
+          shop,
+          returnUrl
+        );
+        console.log("test sub url", subscriptionUrl);
+        ctx.redirect(subscriptionUrl);
       },
     })
   );
